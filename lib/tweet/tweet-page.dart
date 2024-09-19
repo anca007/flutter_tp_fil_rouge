@@ -16,6 +16,15 @@ class TweetPage extends StatefulWidget {
 class _TweetPageState extends State<TweetPage> {
   List<Tweet> tweets = [];
 
+  @override
+  void initState() {
+    //Cette méthode est à utiliser pour lancer les chargement aync, plutot que dans le constructeur
+    //car cette méthode respecte le cycle de vie du composant
+    super.initState();
+    callApi();
+  }
+
+
   void callApi() async {
     var response = await http.get(Uri.parse(
         "https://raw.githubusercontent.com/Chocolaterie/EniWebService/main/api/tweets.json"));
@@ -41,7 +50,6 @@ class _TweetPageState extends State<TweetPage> {
       body: Column(
         children: [
           Header(),
-          ElevatedButton(onPressed: callApi, child: Text("Rafraichir")),
           Expanded(
               child: ListView.builder(
                   itemCount: tweets.length,
