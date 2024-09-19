@@ -14,33 +14,7 @@ class TweetPage extends StatefulWidget {
 }
 
 class _TweetPageState extends State<TweetPage> {
-  List<Tweet> tweets = [];
-
-  @override
-  void initState() {
-    //Cette méthode est à utiliser pour lancer les chargement aync, plutot que dans le constructeur
-    //car cette méthode respecte le cycle de vie du composant
-    super.initState();
-    callApi();
-  }
-
-
-  void callApi() async {
-    var response = await http.get(Uri.parse(
-        "https://raw.githubusercontent.com/Chocolaterie/EniWebService/main/api/tweets.json"));
-
-    if (response.statusCode == 200) {
-      var json = convert.jsonDecode(response.body);
-
-      if (json is List) {
-        setState(() {
-          tweets = List<Tweet>.from(
-              json.map((jsonTweet) => Tweet.fromJson(jsonTweet)));
-        });
-      }
-    }
-  }
-
+ 
   @override
   Widget build(BuildContext context) {
     String? mail = ModalRoute.of(context)?.settings.arguments as String?;
@@ -51,14 +25,44 @@ class _TweetPageState extends State<TweetPage> {
         children: [
           Header(),
           Expanded(
-              child: ListView.builder(
-                  itemCount: tweets.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return TweetCard(tweets[index]);
-                  })),
+              //Utilisé le FutureBuilder pour générer le composant de manière asynchrone
+              child: FutureBuilder<http.Response>(
+            //url de l'appel
+            future: http.get(Uri.parse(
+                "https:raw.githubusercontent.com/Chocolaterie/EniWebService/main/api/tweets.json")),
+            builder: (context, snapshot) {
+              if (snapshot.hasData && snapshot.data?.body != null) {
+                //récupérartion du body de la réponse
+                var body = snapshot.data!.body;
+                //je convertis le body en json
+                List<dynamic> json = convert.jsonDecode(body);
+                //je crée les instances de tweets
+                var tweets = List<Tweet>.from(
+                    json.map((jsonTweet) => Tweet.fromJson(jsonTweet)));
+                return TweetList(tweets);
+              }
+              //si c'est pas ok je renvoie une progress bar ou message d'erreur si trop long
+              return CircularProgressIndicator();
+            },
+          )),
           Footer()
         ],
       ),
     );
+  }
+}
+
+class TweetList extends StatelessWidget {
+  final List<Tweet> tweets;
+
+  TweetList(this.tweets);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+        itemCount: tweets.length,
+        itemBuilder: (BuildContext context, int index) {
+          return TweetCard(tweets[index]);
+        });
   }
 }
