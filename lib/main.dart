@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-
-import 'content-body.dart';
-import 'footer.dart';
-import 'header.dart';
+import 'package:tweeter/auth/login-page.dart';
+import 'package:tweeter/tweet/tweet-page.dart';
 
 void main() {
   runApp(TPTwitterApp());
@@ -12,22 +10,12 @@ class TPTwitterApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text("Twitter"),
-        ),
-        body: Flex(
-          direction: Axis.vertical,
-          children: [
-            // Header
-            Header(),
-            // Content
-            Expanded(child: ContentBody()),
-            // Footer
-            Footer(),
-          ],
-        ),
-      ),
+      routes: {
+        //'/': (context) =>  LoginPage(),
+        '/home' : (context) => TweetPage()
+      },
+        //pour utiliser home, il ne faut pas définir de route '/'
+      home: LoginPage()
     );
   }
 }

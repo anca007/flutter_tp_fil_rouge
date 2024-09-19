@@ -10,11 +10,12 @@ class LoginForm extends StatefulWidget {
 
 class _LoginFormState extends State<LoginForm> {
   var formKey = GlobalKey<FormState>();
+  String? mail;
 
   /**
    * Pour l'instant afficher une dialogue box
    */
-  void displaySuccessDialog(){
+  void displaySuccessDialog() {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => Dialog(
@@ -42,10 +43,11 @@ class _LoginFormState extends State<LoginForm> {
   void onSubmit() {
     // Contrôle de surface
     if (formKey.currentState!.validate()) {
-      // Connexion reussi
-      displaySuccessDialog();
+      //ajouter cette ligne pour lancer la sauvegarde des données du form
+      formKey.currentState!.save();
+      //une fois l'email sauvé, je peux l'envoyer comme argument de la page
+      Navigator.pushNamed(context, "/home", arguments: mail);
     }
-
   }
 
   /*
@@ -85,11 +87,17 @@ class _LoginFormState extends State<LoginForm> {
               ),
             ),
             TextFormField(
-                decoration: InputDecoration(labelText: "Identifiant"),
-                validator: validateEmail),
+              decoration: InputDecoration(labelText: "Identifiant"),
+              validator: validateEmail,
+              onSaved: (value) {
+                mail = value;
+              },
+            ),
             TextFormField(
               obscureText: true,
-              decoration: InputDecoration(labelText: "Mot de passe", ),
+              decoration: InputDecoration(
+                labelText: "Mot de passe",
+              ),
               validator: validatePassword,
             ),
             Padding(
