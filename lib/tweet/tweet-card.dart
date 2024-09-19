@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
-class TweetButton extends StatelessWidget{
+import '../model/Tweet.dart';
 
+class TweetButton extends StatelessWidget {
   String? label;
   String? iconPath;
 
   TweetButton({super.key, this.label, this.iconPath});
 
-  Widget checkButton(){
+  Widget checkButton() {
     // Si icon path est renseignée, alors afficher un icon button
-    if (this.iconPath != null){
+    if (this.iconPath != null) {
       return IconButton(onPressed: () {}, icon: Image.asset(this.iconPath!));
     }
     // Sinon par défaut le text habituel
@@ -22,7 +24,11 @@ class TweetButton extends StatelessWidget{
   }
 }
 
-class TweetCard extends StatelessWidget{
+class TweetCard extends StatelessWidget {
+  Tweet tweet;
+
+  TweetCard(this.tweet, {super.key});
+
   @override
   Widget build(BuildContext context) {
     return Flex(
@@ -37,11 +43,11 @@ class TweetCard extends StatelessWidget{
               SizedBox(
                 width: 150,
                 child: Image.network(
-                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTK2nG24AYDm6FOEC7jIfgubO96GbRso2Xshu1f8abSYQ&s",
+                  tweet.profile!,
                   fit: BoxFit.contain,
                 ),
               ),
-              const Expanded(
+              Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -51,7 +57,7 @@ class TweetCard extends StatelessWidget{
                         Padding(
                           padding: EdgeInsets.only(left: 10.0),
                           child: Text(
-                            "PizzaAnanas@Chocolatine.fr",
+                            tweet.author!,
                             style: TextStyle(
                                 fontWeight: FontWeight.w800, fontSize: 18),
                           ),
@@ -59,7 +65,9 @@ class TweetCard extends StatelessWidget{
                         Padding(
                           padding: EdgeInsets.all(10.0),
                           child: Text(
-                            '50s',
+                            //installer intl en dépendance + import
+                            DateFormat('yyyy-MM-dd').format(tweet.createdDate!),
+                            //tweet.createdDate,
                             style: TextStyle(
                                 fontWeight: FontWeight.w900,
                                 color: Colors.grey),
@@ -70,12 +78,7 @@ class TweetCard extends StatelessWidget{
                     Expanded(
                       child: Padding(
                         padding: EdgeInsets.only(left: 10.0),
-                        child: Text(
-                            "Merde j'ai plus de pierres qu'est-ce qu'on fait?"
-                                " Allez-y mollo avec la joie!"
-                                " Sire, mon père était peut-être unijambiste mais,"
-                                " moi, ma femme a pas de moustache! "
-                                "Mais Attila vous y attend, Sire! Attila! Le Fléau de Dieu! "),
+                        child: Text(tweet.message!),
                       ),
                     ),
                   ],
@@ -98,5 +101,4 @@ class TweetCard extends StatelessWidget{
       ],
     );
   }
-
 }
